@@ -42,6 +42,7 @@ namespace GitUI.BranchTreePanel.ContextMenu
             items.AddRange(CreateGitRefItems());
             items.AddRange(CreateRename());
             items.AddRange(CreateDelete());
+            items.AddRange(CreateRemark());
         }
 
         #region IEnumerable
@@ -108,6 +109,16 @@ namespace GitUI.BranchTreePanel.ContextMenu
                 yield return _menuItemFactory.CreateMenuItem<ToolStripMenuItem, TNode>(
                     node => (node as ICanDelete).Delete(), Strings.Delete, GetTooltip(MenuItemKey.Delete), Properties.Images.BranchDelete)
                     .WithKey(MenuItemKey.Delete);
+            }
+        }
+
+        private IEnumerable<ToolStripItemWithKey> CreateRemark()
+        {
+            if (Implements<ICanRemark>())
+            {
+                yield return _menuItemFactory.CreateMenuItem<ToolStripMenuItem, TNode>(
+                    node => (node as ICanRemark).StartSetBranchRemarkDialog(), Strings.Remark, GetTooltip(MenuItemKey.Remark), Properties.Images.Message)
+                    .WithKey(MenuItemKey.Remark);
             }
         }
 

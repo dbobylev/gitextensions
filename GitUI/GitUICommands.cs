@@ -1035,6 +1035,17 @@ namespace GitUI
             return StartRebaseDialog(owner, from: "", to: null, onto, interactive: false, startRebaseImmediately: false);
         }
 
+        public bool StartSetBranchRemarkDialog(IWin32Window owner, string branchName)
+        {
+            DialogResult result;
+            using (var form = new FormSetBranchRemark(owner, branchName))
+            {
+                result = form.ShowDialog(owner);
+            }
+
+            return result == DialogResult.OK;
+        }
+
         public bool StartRebaseDialog(IWin32Window owner, string from, string to, string onto, bool interactive = false, bool startRebaseImmediately = true)
         {
             bool Action()

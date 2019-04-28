@@ -27,6 +27,7 @@ namespace GitUI.BranchTreePanel
 
             private string ParentPath { get; }
             protected string AheadBehind { get; set; }
+            protected string Remark { get; set; }
 
             /// <summary>Full path of the branch. <example>"issues/issue1344"</example></summary>
             public string FullPath => ParentPath.Combine(PathSeparator.ToString(), Name);
@@ -99,7 +100,8 @@ namespace GitUI.BranchTreePanel
 
             protected override string DisplayText()
             {
-                return string.IsNullOrEmpty(AheadBehind) ? Name : $"{Name} ({AheadBehind})";
+                string ans = string.IsNullOrEmpty(AheadBehind) ? Name : $"{Name} ({AheadBehind})";
+                return string.IsNullOrEmpty(Remark) ? ans : $"{ans} [{Remark}]";
             }
 
             protected void SelectRevision()
@@ -112,7 +114,7 @@ namespace GitUI.BranchTreePanel
             }
         }
 
-        private sealed class LocalBranchNode : BaseBranchNode, IGitRefActions, ICanRename, ICanDelete
+        private sealed class LocalBranchNode : BaseBranchNode, IGitRefActions, ICanRename, ICanDelete, ICanRemark
         {
             public LocalBranchNode(Tree tree, string fullPath, bool isCurrent)
                 : base(tree, fullPath)
@@ -179,6 +181,25 @@ namespace GitUI.BranchTreePanel
             {
                 return UICommands.StartRenameDialog(TreeViewNode.TreeView, FullPath);
             }
+
+            public void StartSetBranchRemarkDialog()
+            {
+                bool ans = UICommands.StartSetBranchRemarkDialog(TreeViewNode.TreeView, FullPath);
+                if (ans)
+                {
+                    RemarkDataProvider remarkDataProvider = new RemarkDataProvider();
+                    string getNewRemark = remarkDataProvider.GetBranchRemark(FullPath);
+                    SetBranchRemark(getNewRemark);
+                    TreeViewNode.TreeView.BeginUpdate();
+                    ApplyText();
+                    TreeViewNode.TreeView.EndUpdate();
+                }
+            }
+
+            public void SetBranchRemark(string remark)
+            {
+                Remark = remark;
+            }
         }
 
         private class BasePathNode : BaseBranchNode
@@ -216,11 +237,13 @@ namespace GitUI.BranchTreePanel
         private sealed class BranchTree : Tree
         {
             private readonly IAheadBehindDataProvider _aheadBehindDataProvider;
+            private readonly RemarkDataProvider _remarkDataProvider;
 
             public BranchTree(TreeNode treeNode, IGitUICommandsSource uiCommands, [CanBeNull]IAheadBehindDataProvider aheadBehindDataProvider)
                 : base(treeNode, uiCommands)
             {
                 _aheadBehindDataProvider = aheadBehindDataProvider;
+                _remarkDataProvider = new RemarkDataProvider();
             }
 
             protected override Task OnAttachedAsync()
@@ -276,6 +299,7 @@ namespace GitUI.BranchTreePanel
 
                 var nodes = new Nodes(this);
                 var aheadBehindData = _aheadBehindDataProvider?.GetData();
+                var remarkData = _remarkDataProvider.GetData();
 
                 var currentBranch = Module.GetSelectedBranch();
                 var pathToNode = new Dictionary<string, BaseBranchNode>();
@@ -287,6 +311,11 @@ namespace GitUI.BranchTreePanel
                     if (aheadBehindData != null && aheadBehindData.ContainsKey(localBranchNode.FullPath))
                     {
                         localBranchNode.UpdateAheadBehind(aheadBehindData[localBranchNode.FullPath].ToDisplay());
+                    }
+
+                    if (remarkData.Count > 0 && remarkData.ContainsKey(localBranchNode.FullPath))
+                    {
+                        localBranchNode.SetBranchRemark(remarkData[localBranchNode.FullPath]);
                     }
 
                     var parent = localBranchNode.CreateRootNode(pathToNode, (tree, parentPath) => new BranchPathNode(tree, parentPath));

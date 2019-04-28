@@ -21,6 +21,8 @@ namespace GitUI.BranchTreePanel.ContextMenu
         /// <see cref="ICanDelete"/>
         internal readonly TranslationString Delete = new TranslationString("Delete");
 
+        internal readonly TranslationString Remark = new TranslationString("Remark");
+
         internal Dictionary<MenuItemKey, TranslationString> Tooltips { get; } = new Dictionary<MenuItemKey, TranslationString>();
     }
 
@@ -32,6 +34,7 @@ namespace GitUI.BranchTreePanel.ContextMenu
         internal readonly TranslationString RebaseTooltip = new TranslationString("Rebase current branch to this branch");
         internal readonly TranslationString ResetTooltip = new TranslationString("Reset current branch to here");
         internal readonly TranslationString RenameTooltip = new TranslationString("Rename this branch");
+        internal readonly TranslationString RemarkTooltip = new TranslationString("Set remark to this branch");
 
         public void ApplyTo(MenuItemsStrings strings)
         {
@@ -41,6 +44,7 @@ namespace GitUI.BranchTreePanel.ContextMenu
             strings.Tooltips[MenuItemKey.GitRefRebase] = RebaseTooltip;
             strings.Tooltips[MenuItemKey.GitRefReset] = ResetTooltip;
             strings.Tooltips[MenuItemKey.Rename] = RenameTooltip;
+            strings.Tooltips[MenuItemKey.Remark] = RemarkTooltip;
         }
     }
 }

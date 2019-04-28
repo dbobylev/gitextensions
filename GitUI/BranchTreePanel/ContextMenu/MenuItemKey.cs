@@ -15,6 +15,7 @@
 
         // Common Actions
         Rename,
-        Delete
+        Delete,
+        Remark
     }
 }

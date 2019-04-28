@@ -92,6 +92,7 @@
     <Compile Include="BranchTreePanel\ContextMenu\RemoteBranchMenuItems.cs" />
     <Compile Include="BranchTreePanel\ContextMenu\TagMenuItems.cs" />
     <Compile Include="BranchTreePanel\Interfaces\ICanDelete.cs" />
+    <Compile Include="BranchTreePanel\Interfaces\ICanRemark.cs" />
     <Compile Include="BranchTreePanel\Interfaces\ICanRename.cs" />
     <Compile Include="BranchTreePanel\Interfaces\IGitRefActions.cs" />
     <Compile Include="BranchTreePanel\ContextMenu\IMenuItemFactory.cs" />
@@ -170,6 +171,12 @@
     <Compile Include="CommandsDialogs\BrowseDialog\MenuCommandsBase.cs" />
     <Compile Include="CommandsDialogs\FormBrowseController.cs" />
     <Compile Include="CommandsDialogs\FormFileHistoryController.cs" />
+    <Compile Include="CommandsDialogs\FormSetBranchRemark.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CommandsDialogs\FormSetBranchRemark.Designer.cs">
+      <DependentUpon>FormSetBranchRemark.cs</DependentUpon>
+    </Compile>
     <Compile Include="CommandsDialogs\FullBleedTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -338,6 +345,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RemarkDataProvider.cs" />
     <Compile Include="RevisionDiffInfoProvider.cs" />
     <Compile Include="RevisionDiffKind.cs" />
     <Compile Include="FormStatusOutputLog.cs" />
@@ -1210,6 +1218,9 @@
     <EmbeddedResource Include="CommandsDialogs\BrowseDialog\FormUpdates.resx">
       <DependentUpon>FormUpdates.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandsDialogs\FormSetBranchRemark.resx">
+      <DependentUpon>FormSetBranchRemark.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CommandsDialogs\RevisionDiffControl.resx">
       <DependentUpon>RevisionDiffControl.cs</DependentUpon>
