@@ -286,38 +286,35 @@ namespace GitUI.CommitInfo
             {
                 var cancellationToken = _asyncLoadCancellation.Next();
 
-                ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await LoadLinksForRevisionAsync(_revision); }).FileAndForget();
+                var initialRevision = _revision;
+
+                ThreadHelper.JoinableTaskFactory.RunAsync(async () => { await LoadLinksForRevisionAsync(initialRevision); }).FileAndForget();
 
                 ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
-                    if (_refsOrderDict == null)
-                    {
-                        await LoadSortedRefsAsync();
-                    }
-
                     // No branch/tag data for artificial commands
                     if (AppSettings.CommitInfoShowContainedInBranches)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await LoadBranchInfoAsync(_revision.ObjectId);
+                        await LoadBranchInfoAsync(initialRevision.ObjectId);
                     }
 
                     if (AppSettings.ShowAnnotatedTagsMessages)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await LoadAnnotatedTagInfoAsync(_revision.Refs);
+                        await LoadAnnotatedTagInfoAsync(initialRevision.Refs);
                     }
 
                     if (AppSettings.CommitInfoShowContainedInTags)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await LoadTagInfoAsync(_revision.ObjectId);
+                        await LoadTagInfoAsync(initialRevision.ObjectId);
                     }
 
                     if (AppSettings.CommitInfoShowTagThisCommitDerivesFrom)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await LoadDescribeInfoAsync(_revision.ObjectId);
+                        await LoadDescribeInfoAsync(initialRevision.ObjectId);
                     }
                 }).FileAndForget();
 
@@ -356,26 +353,6 @@ namespace GitUI.CommitInfo
                         }
 
                         return $"{WebUtility.HtmlEncode(_trsLinksRelatedToRevision.Text)} {result}";
-                    }
-                }
-
-                async Task LoadSortedRefsAsync()
-                {
-                    await TaskScheduler.Default;
-                    _refsOrderDict = ToDictionary(Module.GetSortedRefs());
-
-                    await this.SwitchToMainThreadAsync(cancellationToken);
-                    UpdateRevisionInfo();
-
-                    IDictionary<string, int> ToDictionary(IReadOnlyList<string> list)
-                    {
-                        var dict = new Dictionary<string, int>();
-                        for (int i = 0; i < list.Count; i++)
-                        {
-                            dict.Add(list[i], i);
-                        }
-
-                        return dict;
                     }
                 }
 
